@@ -1,0 +1,25 @@
+name: Issue Automation
+on:
+  issues:
+    types: [opened]
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(label => label.name);
+            let comment = 'Hello, world!';
+            if (labels.includes('bug')) {
+              comment = 'Thank you. We will fix it.';
+            } else if (labels.includes('feature')) {
+              comment = 'Thank you, we will consider to include this feature.';
+            }
+            await github.rest.issues.createComment({
+              issue_number: issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
